@@ -28,4 +28,4 @@ If you use this code or data, please cite the associated preprint and the Zenodo
 
 ## License
 
-This code is released under the MIT License. See `LICENSE`.
+This repository is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See `LICENSE`.

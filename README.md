@@ -6,7 +6,9 @@ The complete archival research snapshot, including additional code, data, figure
 
 https://doi.org/10.5281/zenodo.19857910
 
-## Repository Contents
+## Archive Contents
+
+The complete Zenodo archive includes:
 
 - `pygeneplexus/`: GenePlexus Python code used as part of the ModGenePlexus workflow.
 - `src/`: Main ModGenePlexus analysis scripts.
@@ -28,4 +30,4 @@ If you use this code or data, please cite the associated preprint and the Zenodo
 
 ## License
 
-This repository is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See `LICENSE`.
+This repository is licensed under the BSD 3-Clause License. See `LICENSE`.

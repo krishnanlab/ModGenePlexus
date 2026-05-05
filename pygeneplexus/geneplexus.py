@@ -191,13 +191,16 @@ class GenePlexus:
                 "set up using geneplexus.custom.subset_gsc_to_network first.",
             )
 
-    def load_genes(self, input_genes: List[str], disease: str,neg_genes: List[str], orig_calc_negs: bool): #pass in a disease with load_genes, as this is what I call from my file
+    def load_genes(self, input_genes: List[str], disease: str, neg_genes: List[str], orig_calc_negs: bool):
         """Load gene list, convert to Entrez, and set up positives/negatives.
 
         :attr:`GenePlexus.input_genes` (List[str]): Input gene list.
 
         Args:
             input_genes: Input gene list, can be mixed type.
+            disease: Disease identifier used when looking up precomputed negatives.
+            neg_genes: Precomputed negative gene list.
+            orig_calc_negs: If True, use the original hypergeometric negative calculation.
 
         See also:
             Use :meth:`geneplexus.util.read_gene_list` to load a gene list
@@ -206,7 +209,7 @@ class GenePlexus:
         """
         self._load_genes(input_genes)
         self._convert_to_entrez()
-        self._get_pos_and_neg_genes(disease,neg_genes,orig_calc_negs)
+        self._get_pos_and_neg_genes(disease, neg_genes, orig_calc_negs)
 
     def _load_genes(self, input_genes: List[str]):
         """Load gene list into the GenePlexus object.
@@ -241,7 +244,7 @@ class GenePlexus:
         )
         return self.df_convert_out
 
-    def _get_pos_and_neg_genes(self, disease: str, neg_genes: str, orig_calc_negs: bool): 
+    def _get_pos_and_neg_genes(self, disease: str, neg_genes: List[str], orig_calc_negs: bool):
         """Set up positive and negative genes given the network.
 
         :attr:`GenePlexus.pos_genes_in_net` (array of str)
@@ -260,24 +263,22 @@ class GenePlexus:
             self.net_type,
             self.convert_ids,
         )
-        if orig_calc_negs==True:
- 	        self.negative_genes = _geneplexus._get_negatives_orig(
-	            self.file_loc,
-	            self.net_type,
-	            self.gsc,
-	            self.pos_genes_in_net,
-	        )
-	        
+        if orig_calc_negs:
+            self.negative_genes = _geneplexus._get_negatives_orig(
+                self.file_loc,
+                self.net_type,
+                self.gsc,
+                self.pos_genes_in_net,
+            )
         else:
-	        self.negative_genes = _geneplexus._get_negatives(
-	            self.file_loc,
-	            self.net_type,
-	            self.gsc,
-	            self.pos_genes_in_net,
-	            disease,
-	            neg_genes,
-	        )
-        print(self.negative_genes)
+            self.negative_genes = _geneplexus._get_negatives(
+                self.file_loc,
+                self.net_type,
+                self.gsc,
+                self.pos_genes_in_net,
+                disease,
+                neg_genes,
+            )
         return self.pos_genes_in_net, self.negative_genes, self.net_genes
 
     def fit_and_predict(
@@ -287,7 +288,7 @@ class GenePlexus:
         num_folds: int = 3,
         null_val: float = -10,
         random_state: Optional[int] = 0,
-        cross_validate: bool = False, # changed to false for my default
+        cross_validate: bool = False,
         topk: int = 30
     ):
         """Fit a model and predict gene scores.

@@ -6,12 +6,6 @@ import csv
 import argparse
 
 def parse_GSC_file(GSC, min_set_size, max_set_size, net):
-    # This section will parse the input file and build two
-    # dictionaries to be used later
-
-    # data_dict = The key is the ontology ID and the value is a list of genes assoicated with that ID
-    # names_dict = The key is the ontology ID and the value is the more understandable name
-    # It is in this section that the max and min fo the set size is applied
     if 'GO' in GSC:
         FN = "../data/propogated/annotations_" + net + "_GO.tsv"
     elif 'mondo' == GSC:

@@ -78,7 +78,6 @@ def _get_genes_in_network(file_loc, net_type, convert_ids):
 
 
 def _get_negatives_orig(file_loc, net_type, gsc, pos_genes_in_net):
-    print("In orig negatives")
     uni_genes = util.load_genes_universe(file_loc, gsc, net_type)
     good_sets = util.load_gsc(file_loc, gsc, net_type)
     M = len(uni_genes)
@@ -91,43 +90,14 @@ def _get_negatives_orig(file_loc, net_type, gsc, pos_genes_in_net):
         if pval < 0.05:
             genes_to_remove = np.union1d(genes_to_remove, good_sets[akey]["Genes"])
     negative_genes = np.setdiff1d(uni_genes, genes_to_remove)
-    print(len(negative_genes))
-    #return a 1d array of values
     return negative_genes
 
-#updated this to start with a list of negatives, and just need to convert to numpy
-def _get_negatives(file_loc, net_type, gsc, pos_genes_in_net, disease,neg_genes):
-    print("In new negatives")
-    #print(neg_file_path)
-    #negatives=pd.read_csv(neg_file_path,sep="\t")
-    #Need to filter it for disease of interest
-    #print(negatives)
-    print(disease)
 
-
-    #Subsetting neg genes based on network
+def _get_negatives(file_loc, net_type, gsc, pos_genes_in_net, disease, neg_genes):
     uni_genes = util.load_genes_universe(file_loc, gsc, net_type)
     neg_genes = [num for num in neg_genes if num in uni_genes]
-
-    
-
-    #Get only the training negatives
-    #negatives=negatives.loc[(negatives['Split']=="Train")]
-    #Get Negatives column after filtering
-    #negative_genes=negatives['Negatives'].to_numpy()
-
-    #Reading in from argument that is a list
-    negative_genes=np.asarray(neg_genes)
-
-    negative_genes=negative_genes.astype(str)
-    print(len(negative_genes))
-    print(type(negative_genes))
-
-    #To make sure genes that are positive are not negative
-    negative_genes=np.setdiff1d(negative_genes,pos_genes_in_net)
-    print(len(pos_genes_in_net))
-
-    #return a 1d array of values
+    negative_genes = np.asarray(neg_genes).astype(str)
+    negative_genes = np.setdiff1d(negative_genes, pos_genes_in_net)
     return negative_genes
 
 
@@ -177,8 +147,8 @@ def _run_sl(
         logger.info("Performing cross validation.")
         avgps = []
         priors = []
-        orig= []
-        ptopks=[]
+        orig = []
+        ptopks = []
         skf = StratifiedKFold(n_splits=num_folds, shuffle=True, random_state=random_state)
         for trn_inds, tst_inds in skf.split(Xdata, ydata):
             clf_cv = LogisticRegression(**logreg_kwargs)
@@ -188,31 +158,15 @@ def _run_sl(
             num_tst_pos = np.sum(ydata[tst_inds])
             prior = num_tst_pos / Xdata[tst_inds].shape[0]
             log2_prior = np.log2(avgp / prior)
-            #avgps.append(log2_prior)
             orig.append(log2_prior)
             avgps.append(avgp)
             priors.append(prior)
-            #Calc normal precision@topk. Do it manually since functions not obvious with how
-            #the data is set up with probs TP/(TP+FP)
 
-            #Make frame where its probscv and ydata[test_inds]. Sort on probscv. Take topk rows
-            labframe = pd.DataFrame({"Label" :ydata[tst_inds],"Probs": probs_cv})
+            labframe = pd.DataFrame({"Label": ydata[tst_inds], "Probs": probs_cv})
             labframe["ProbLab"] = 1
-            labframe=labframe.sort_values("Probs",ascending=False)
-
+            labframe = labframe.sort_values("Probs", ascending=False)
             topkframe = labframe.head(topk)
-            #Can calculate precision from this frame
-            
-            #print(labframe)
-            #print(probs_cv)
-            #print(len(probs_cv))
-            #print(len(tst_inds))
-            #print(len(ydata[tst_inds]))
-            #print(probs_cv[tst_inds])
-
-            ptopk=precision_score(topkframe['Label'].tolist(),topkframe['ProbLab'].tolist())
-            #print(avgp)
-            #print(ptopk)
+            ptopk = precision_score(topkframe['Label'].tolist(), topkframe['ProbLab'].tolist())
             ptopks.append(ptopk)
 
         cvframe = pd.DataFrame({"AUPRC" : avgps , "P@topk" : ptopks , "Priors" : priors, "log2(AUPRC/Prior)" : orig})

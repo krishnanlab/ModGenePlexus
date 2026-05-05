@@ -34,24 +34,6 @@ def check_file(path: str):
         raise FileNotFoundError(path)
 
 
-
-
-# def load_gsc(
-#     file_loc: str,
-#     gsc: config.GSC_TYPE,
-#     net_type: config.NET_TYPE,
-# ) -> config.GSC_DATA_TYPE:
-#     """Load gene set collection dictionary.
-
-#     Args:
-#         file_loc: Location of data files.
-#         target_set: Target gene set collection.
-#         net_type: Network used.
-
-#     """
-#     file_name = f"GSC_{gsc}_{net_type}_GoodSets.json"
-#     return _load_json_file(file_loc, file_name)
-
 def load_gsc(
     file_loc: str,
     gsc: str,
@@ -67,7 +49,6 @@ def load_gsc(
     """
     file_name = f"GSC_{gsc}_{net_type}_GoodSets.json"
     return _load_json_file(file_loc, file_name)
-
 
 
 def _load_np_file(
@@ -91,24 +72,8 @@ def _load_np_file(
     elif load_method == "txt":
         return np.loadtxt(file_path, dtype=str)
     else:
-        raise ValueError(f"Unknwon load method: {load_method!r}")
+        raise ValueError(f"Unknown load method: {load_method!r}")
 
-
-# def load_genes_universe(
-#     file_loc: str,
-#     gsc: config.GSC_TYPE,
-#     net_type: config.NET_TYPE,
-# ) -> np.ndarray:
-#     """Load gene universe a given network and GSC.
-
-#     Args:
-#         file_loc: Location of data files.
-#         gsc: Gene set collection.
-#         net_type: Network used.
-
-#     """
-#     file_name = f"GSC_{gsc}_{net_type}_universe.txt"
-#     return _load_np_file(file_loc, file_name, load_method="txt")
 
 def load_genes_universe(
     file_loc: str,
@@ -127,26 +92,27 @@ def load_genes_universe(
     return _load_np_file(file_loc, file_name, load_method="txt")
 
 
-#train_genes are high/med seen genes. train_sub says to use that to subset Remy's files or not
-def get_negatives(file_loc, net_type, gsc, pos_genes_in_net, train_genes,train_sub: bool):
+def get_negatives(file_loc, net_type, gsc, pos_genes_in_net, train_genes, train_sub: bool):
+    """Compute negative genes by excluding positives and related gene sets.
+
+    Args:
+        file_loc: Location of data files.
+        net_type: Network type.
+        gsc: Gene set collection name.
+        pos_genes_in_net: Positive genes present in the network.
+        train_genes: High/medium study-bias genes used to subset the universe.
+        train_sub: If True, subset universe and GSC to train_genes only.
+
+    """
     uni_genes = load_genes_universe(file_loc, gsc, net_type)
     good_sets = load_gsc(file_loc, gsc, net_type)
 
-    #subset the above to only have
-    if train_sub == True:
-        #an array
-        #https://numpy.org/doc/stable/reference/generated/numpy.isin.html
-        mask=np.isin(uni_genes,train_genes)
-        uni_genes=uni_genes[mask]
-        #dictionary, needs to subset the values of each key
-        #multiple values, Name and Genes
-        #the values are stored as lists, so loop for each key, do the above
+    if train_sub:
+        mask = np.isin(uni_genes, train_genes)
+        uni_genes = uni_genes[mask]
         for k in good_sets:
-            newmask=np.isin(good_sets[k]['Genes'],train_genes)
-        	#test_dict[k]['Genes']=good_sets[k][newmask]
-            good_sets[k]['Genes']=list(compress(good_sets[k]['Genes'],newmask))
-        #good_sets
-        #test_dict={key:val for key, val in good_sets.items() if val in train_genes}
+            newmask = np.isin(good_sets[k]['Genes'], train_genes)
+            good_sets[k]['Genes'] = list(compress(good_sets[k]['Genes'], newmask))
 
     M = len(uni_genes)
     N = len(pos_genes_in_net)

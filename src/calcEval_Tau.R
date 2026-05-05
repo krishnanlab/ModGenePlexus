@@ -230,11 +230,7 @@ taucalc<-function(file,typeclus){
   plexout=read_tsv(file,col_types="cccdccdccd") %>% filter(str_starts(Cluster,typeclus) | Cluster=="AllAssign")
   disease=plexout$Disease[1]
   cursplit=monsplits %>% filter(Trait==disease)
-  
-  #bug fix for duplicate allassign
-  #cursplit=cursplit[1:(nrow(cursplit)-4),]
-  
-  
+
   outtib=tibble()
   
   #Auprc of AllAssign and AllClus
@@ -242,10 +238,6 @@ taucalc<-function(file,typeclus){
   for(whole in wholes){
     #This is equal to AllAssign because I want just the postest/negtest. Not of allclus, but of AllAssign for evaluation
     curwhole=cursplit %>% filter(Term=="AllAssign"| Term==paste0(typeclus,"_Neutral"))
-    
-    #For now: Get first 5 rows
-    #curwhole=curwhole[1:5,]
-    #print(curwhole)
     cpostest=filter(curwhole,Type=="Postest")$Gene %>% strsplit(", ") %>% unlist
     cnegtest=filter(curwhole,Type=="Negtest")$Gene %>% strsplit(", ") %>% unlist
     cneutrals=filter(curwhole,Term==paste0(typeclus,"_Neutral"))$Gene %>% strsplit(", ") %>% unlist
@@ -307,12 +299,8 @@ taucalc<-function(file,typeclus){
 
 typenets=c("strict_normal")
 typecluss=c("domino","noprop")
-#typecluss=c("domino","noprop","notest")
-
 nettoget="string"
-#typediffs=c("diff","creeds_drug","creeds_gene","magma_1e2","magma_1e5","magma_1e8")
 typediffs=c("magma_1e2","magma_1e5","magma_1e8")
-#typediffs="diff"
 
 for(typediff in typediffs){
 for(typeclus in typecluss){

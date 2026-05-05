@@ -15,7 +15,7 @@ formatoutput<-function(domout,disease){
   #separate_rows above puts the genes into their own rows. Get rid of these
   domout = domout %>% filter(Gene!="e")
   
-  #Renumb3er clusters based on how big they are
+  #Renumber clusters based on how big they are
   cluscounts = domout %>% group_by(Cluster) %>% count %>% arrange(n%>%desc) %>% ungroup
   cluscounts$NewCluster=as.character(1:nrow(cluscounts))
   clusassign = cluscounts %>% select(-n) 
@@ -29,8 +29,7 @@ formatoutput<-function(domout,disease){
   #In Cluster column, modify it to have "domino_" in front
   domout=domout %>% mutate(Cluster = paste("domino_", Cluster, sep = ""))
   
-  #return in order Clsuter | Gene
-  return(domout %>% select(Disease,Cluster,Gene))
+  return(domout %>% select(Disease, Cluster, Gene))
 }
 
 #Actual running of the stuff and loading/writing files based on traits
@@ -44,8 +43,6 @@ runDomino<-function(disease,typediff,typenet,dissplits){
   
   #Create active gene file
   agfilename = paste0("./domino/input/strict_normal/",typediff,"/",disease,".txt")
-  #Create file and write it. File is jsut each gene on a line
-  #Also have to write the "e_" to indicate the correct gene
   ag = filter(dissplits,Name==disease)$Train %>% strsplit(", ") %>% unlist %>% paste0("e_",.) %>% as_tibble
   
   write_tsv(ag,agfilename,col_names=F)
@@ -90,9 +87,6 @@ make_dom_minustest<-function(disease,output,dissplits){
   
   
 }
-
-#Disease splits, will be taking training data and finding modules they fall in 
-#in string
 
 typenet="strict_normal"
 typediffs=c("diff","creeds_drug","creeds_gene")

@@ -3,10 +3,11 @@
 **A module-based, network-ML approach for gene classification of long, noisy, heterogeneous gene lists from GWAS and transcriptomics studies**
 
 [![Preprint](https://img.shields.io/badge/Preprint-bioRxiv-blue)](https://doi.org/10.1101/2025.08.11.669721)
+[![Published](https://img.shields.io/badge/Published-Bioinformatics-blue)](https://doi.org/10.1093/bioinformatics/btag571)
 [![Zenodo](https://img.shields.io/badge/Archive-Zenodo-blue)](https://doi.org/10.5281/zenodo.19857910)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-green)](LICENSE)
 
-> **Paper:** McKim A, Mancuso CA, Krishnan A. *A module-based approach for post-omics, post-GWAS network-based gene classification.* bioRxiv (2025). https://doi.org/10.1101/2025.08.11.669721
+> **Paper:** McKim A, Mancuso CA, Krishnan A. *A module-based approach for post-omics, post-GWAS network-based gene classification.* bioRxiv (2025). [https://doi.org/10.1101/2025.08.11.669721](https://doi.org/10.1093/bioinformatics/btag571)
 >
 > **Complete archive (code + data + figures + results):** https://doi.org/10.5281/zenodo.19857910
 
